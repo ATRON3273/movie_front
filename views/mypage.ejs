@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('_component/head.ejs', {titleName: '마이 페이지'})%>
+<body>
+    <a href="/">메인 화면</a>
+    ID : <%= account_id %>
+    비밀번호
+    <input type="password" name="login_pw" id="input_pw">
+    별명
+    <input type="text", name="nickname", id="input_nickname">
+    이메일
+    <input type="email", name="email", id="input_email">
+    <button id="btn_modify">정보수정</button>
+    <p>현재 포인트</p>
+    <ol>
+        <li>포인트 내역</li>
+    </ol>
+
+    <script>
+        const btn_modify = findId('btn_modify');
+        const input_pw = findId('input_pw');
+        const input_nickname = findId('input_nickname');
+        const input_email = findId('input_email');
+
+        btn_modify.addEventListener('click', function(){
+            const data = {
+                pw: input_pw.value,
+                nickname: input_nickname.value,
+                email: input_email.value,
+            };
+            requestPostAPI('/mypage', data);
+        });
+    </script>
+</body>
+</html>

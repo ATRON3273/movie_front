@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('_component/head.ejs', {titleName: '로그인'})%>
+<body>
+    <a href="/">메인 화면</a>
+    로그인 페이지
+    ID
+    <input type="id" name="login_id" id="input_id">
+    비밀번호
+    <input type="password" name="login_pw" id="input_pw">
+    <button id="btn_login">로그인</button>
+    <br>
+    <a href="/signup">회원가입</a>
+    
+    <script>
+        const btn_login = document.getElementById('btn_login');
+        const input_id = document.getElementById('input_id');
+        const input_pw = document.getElementById('input_pw');
+
+        btn_login.addEventListener('click', function(){
+            const data = {
+                id: input_id.value,
+                pw: input_pw.value,
+            };
+            requestPostAPI('/login', data)
+            .then(function (response) {
+                if (response.data.result)
+                {
+                    alert('로그인 성공');
+                    window.location.href = '/';
+                }
+                else
+                {
+                    alert('로그인 실패');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

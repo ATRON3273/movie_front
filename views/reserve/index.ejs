@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<%- include('_component/head.ejs', {titleName: '영화 예약'})%>
 <body>
+    <a href="/">메인 화면</a>
     티켓 예약 페이지
     <title>영화티켓 예약</title>
         <p>영화목록</p>
@@ -24,6 +20,6 @@
             <li>일정1</li>
             <li>일정2</li>
         </ul>
-    <a href="/reserve/seat.html">좌석선택</a>
+    <a href="/reserve/seat">좌석선택</a>
 </body>
 </html>

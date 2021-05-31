@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('_component/head.ejs', {titleName: '회원가입'})%>
+<body>
+    <a href="/">메인 화면</a>
+    ID
+    <input type="id" name="login_id" id="input_id">
+    비밀번호
+    <input type="password" name="login_pw" id="input_pw">
+    별명
+    <input type="text", name="nickname", id="input_nickname">
+    이메일
+    <input type="email", name="email", id="input_email">
+    <button id="btn_signup">회원가입</button>
+    <script>
+        const btn_signup = findID('btn_signup');
+        const input_id = findID('input_id');
+        const input_pw = findID('input_pw');
+        const input_nickname = findID('input_nickname');
+        const input_email = findID('input_email');
+
+        btn_signup.addEventListener('click', function()
+        {
+            const data = {
+                id: input_id.value,
+                pw: input_pw.value,
+                nickname: input_nickname.value,
+                email: input_email.value,
+            };
+            requestPostAPI('/signup', data)
+            .then(function (response)
+            {
+                if (response.data.result == true)
+                {
+                    alert('회원가입 성공');
+                    window.location.href = '/login';
+                }
+                else
+                {
+                    alert('회원가입 실패');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
