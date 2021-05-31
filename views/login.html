@@ -7,10 +7,15 @@
     <title>Document</title>
 </head>
 <body>
+    <a href="/index.html">메인 화면</a>
     로그인 페이지
+    ID
     <input type="id" name="login_id" id="input_id">
+    비밀번호
     <input type="password" name="login_pw" id="input_pw">
     <button id="btn_login">로그인</button>
+    <br>
+    <a href="/signup.html">회원가입</a>
     
     <script>
         const btn_login = document.getElementById('btn_login');
@@ -38,10 +43,9 @@
             })
             .then(response => response.json())
             .then(result => {
-                alert(console.log(result));
+                console.log(result);
             })
         });
-
     </script>
 </body>
 </html>
