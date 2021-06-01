@@ -1,13 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!--????-->
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>영화</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/script/common.js"></script>
 </head>
 <body>
-    <a href="/index">메인화면</a>
+    <a href="/">메인화면</a>
+    <input type="text" name="keyword" id="keyword">
+    <button id="btn_search">검색</button>
+
+    <script>
+        const btn_search = findId('btn_search');
+        const keyword = findId('keyword');
+
+        btn_search.addEventListener('click', function()
+        {
+            const data = {
+                keyword: keyword.value,
+            };
+            requestPostAPI('/movieinfo/movie', data);
+        });
+    </script>
     <title>영화 제목</title>
     <h1>영화제목</h1>
         <h2>영화 설명</h2>
@@ -22,7 +40,7 @@
             <p>제작사 : </p>
             <p>배급사 : </p>
             <p>제작상태</p>
-            <p</p>
+            <p></p>
             <img src="">
         <h2>평점</h2>
             <p>평점 : </p>

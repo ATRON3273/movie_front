@@ -7,23 +7,35 @@
     <input type="id" name="login_id" id="input_id">
     비밀번호
     <input type="password" name="login_pw" id="input_pw">
+    이름
+    <input type="text", name="name", id="input_name">
+    생년월일
+    <input type="date", name="birth", id="input_birth">
+    연락처
+    <input type="tel", name="phone", id="input_phone">
     별명
     <input type="text", name="nickname", id="input_nickname">
     이메일
     <input type="email", name="email", id="input_email">
     <button id="btn_signup">회원가입</button>
     <script>
-        const btn_signup = findID('btn_signup');
-        const input_id = findID('input_id');
-        const input_pw = findID('input_pw');
-        const input_nickname = findID('input_nickname');
-        const input_email = findID('input_email');
+        const btn_signup = findId('btn_signup');
+        const input_id = findId('input_id');
+        const input_pw = findId('input_pw');
+        const input_name = findId('input_name');
+        const input_birth = findId('input_birth');
+        const input_phone = findId('input_phone');
+        const input_nickname = findId('input_nickname');
+        const input_email = findId('input_email');
 
         btn_signup.addEventListener('click', function()
         {
             const data = {
                 id: input_id.value,
                 pw: input_pw.value,
+                name: input_name.value,
+                birth: input_birth.value,
+                phone: input_phone.value,
                 nickname: input_nickname.value,
                 email: input_email.value,
             };

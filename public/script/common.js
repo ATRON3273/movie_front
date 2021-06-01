@@ -15,7 +15,7 @@ function requestPostAPI(url, data)
     });
 }
 
-function findID(id)
+function findId(id)
 {
     return document.getElementById(id);
 }

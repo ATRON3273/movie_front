@@ -13,9 +13,9 @@
     <a href="/signup">회원가입</a>
     
     <script>
-        const btn_login = document.getElementById('btn_login');
-        const input_id = document.getElementById('input_id');
-        const input_pw = document.getElementById('input_pw');
+        const btn_login = findId('btn_login');
+        const input_id = findId('input_id');
+        const input_pw = findId('input_pw');
 
         btn_login.addEventListener('click', function(){
             const data = {
