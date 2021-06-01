@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 로그인</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/script/common.js"></script>
+</head>
+<body>
+    <a href="/">관리자 메인 화면</a>
+    <a href="/">메인 화면</a>
+    관리자 로그인 페이지
+    ID
+    <input type="id" name="admin_login_id" id="input_admin_id">
+    비밀번호
+    <input type="password" name="admin_login_pw" id="input_admin_pw">
+    <button id="btn_admin_login">로그인</button>
+    
+    <script>
+        const btn_login = findID('btn_admin_login');
+        const input_id = findID('input_admin_id');
+        const input_pw = findID('input_admin_pw');
+
+        btn_login.addEventListener('click', function(){
+            const data = {
+                id: input_id.value,
+                pw: input_pw.value,
+            };
+            requestPostAPI('/admin/login', data)
+            .then(function (response) {
+                if (response.data.result)
+                {
+                    alert('로그인 성공');
+                    window.location.href = '/admin';
+                }
+                else
+                {
+                    alert('로그인 실패');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

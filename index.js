@@ -37,11 +37,13 @@ function destorySession(req)
     req.session.destroy();
 }
 
+// 메인 페이지
 app.get('/', function(req, res)
 {
     res.render('index')
 });
 
+// 메인 페이지 검색
 app.post('/', function(req, res) {
     // query(search)
     res.json({
@@ -74,6 +76,7 @@ app.post('/login', function(req, res) {
     console.log(`id : ${id}, pw : ${pw}`);
 });
 
+// 회원가입 페이지
 app.get('/signup', function(req, res)
 {
     if (hasSession(req) == true)
@@ -120,6 +123,7 @@ app.get('/item', function(req, res)
     res.render('item');
 });
 
+// 회원 계정 마이 페이지
 app.get('/mypage', function(req, res)
 {
     if (hasSession(req) == true)
@@ -163,6 +167,7 @@ app.get('/reserve/seat', function(req, res)
     res.render('/reserve/seat')
 });
 
+// 영화정보 페이지
 app.get('/movieinfo/movie', function(req, res)
 {
     const search_keyword = req.body.keyword;
@@ -178,5 +183,32 @@ app.post('movieinfo/movie', function(req, res)
     res.redirect('/movieinfo/movie');
     console.log(`search : ${keyword}`);
 })
+
+
+// 관리자 메인 페이지
+app.get('/admin', function(req, res)
+{
+    if (hasSession(req) == true)
+    {
+        res.redirect('/admin/login');
+    }
+    else
+    {
+        res.render('admin');
+    }
+});
+
+// 관리자 로그인 페이지
+app.get('/admin/login', function(req, res)
+{
+    if (hasSession(req) == true)
+    {
+        res.redirect('/admin');
+    }
+    else
+    {
+        res.render('admin/login');
+    }
+});
 
 app.listen(3000);

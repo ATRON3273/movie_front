@@ -9,5 +9,24 @@
     <a href="/reserve/index">영화예매</a>
     <a href="/item">상품구매</a>
     <a href="/mypage">마이페이지</a>
+
+    <script>
+        const btn_search = findID('btn_search');
+        const keyword = findID('keyword');
+
+        btn_search.addEventListener('click', function()
+        {
+            const data = {
+                keyword: keyword.value,
+            };
+            requestPostAPI('/', data)
+            .then(function (response) {
+                if (response.data.result)
+                {
+                    window.location.href = '/movieinfo/movie';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
