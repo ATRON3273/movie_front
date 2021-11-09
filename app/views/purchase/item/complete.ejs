@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../_component/head.ejs', {titleName: '결제 완료'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('../../_component/goto_main.ejs')%>
+    <!--이 페이지 보여주기 전 결제 창 하나 대충 띄워주기-->
+    <h1>결제 완료</h1>
+    <!--결제 정보-->
+    <div id="payment_result"></div>
+    <table>
+        <thead>
+            <th>상품</th>
+            <th>상품가격</th>
+            <th>주문수량</th>
+        </thead>
+        <tbody id="order_item_list">
+        </tbody>
+    </table>
+    <a href="/">메인 화면</a><br>
+
+    <script>
+        $(document).ready(() => {
+            // 여기에 결제고유번호를 받아옴
+            const payment_uid = "6546546546";
+            // 각 id값을 받아와 변수에 저장
+            const payment_result = $('#payment_result');
+            const order_item_list = $('#order_item_list');
+
+            show_result();
+
+            // 결제 결과를 화면에 출력하는 함수
+            async function show_result()
+            {
+                const data = {payment_uid: payment_uid};
+
+                const response_data = await requestPostAPI('/purchase/complete/load_data', data);
+                const theater_name = response_data.data.theater_name;
+                const store_name = response_data.data.store_name;
+                const basket_list = response_data.data.basket_list;
+                const payment_data = response_data.data.payment_data;
+
+                // 리스트 값을 받아서 option 내용을 바꿈
+                payment_result.html('');
+                payment_result.append(`
+                    <p>영화관 : ${theater_name}</p>
+                    <p>상점 : ${store_name}</p>
+                    <p>결제금액 : ${payment_data.payment_price}</p>
+                    <p>결제방법 : ${payment_data.payment_method}</p>`);
+
+                order_item_list.html('');
+                for (const basket of basket_list)
+                {
+                    order_item_list.append($(`
+                    <tr id=${basket.basket_uid}>
+                        <td>${basket.item_name}</td>
+                        <td>${basket.item_price}</td>
+                        <td>${basket.order_quantity}</td>
+                    </tr>`));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

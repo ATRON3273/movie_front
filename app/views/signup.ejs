@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('_component/head.ejs', {titleName: '회원가입'})%>
+<body>
+    <div class="container py-3">
+        <!--메인 화면-->
+        <%- include('_component/goto_main.ejs')%>
+        <h1>회원가입</h1>
+        <form id="signup_form" class="mb-3">
+            <div class="mb-3">
+                <label for="input_id" class="form-label">ID</label>
+                <input type="text" class="form-control" id="input_id" required>
+            </div>
+            <div class="mb-3">
+                <label for="input_pw" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="input_pw" required>
+            </div>
+            <div class="mb-3">
+                <label for="input_name" class="form-label">이름</label>
+                <input type="text" class="form-control" id="input_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="input_birth" class="form-label">생년월일</label>
+                <input type="date" class="form-control" id="input_birth" required>
+            </div>
+            <div class="mb-3">
+                <label for="input_phone" class="form-label">연락처</label>
+                <input type="tel" class="form-control" id="input_phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="input_nickname" class="form-label">별명</label>
+                <input type="text" class="form-control" id="input_nickname" required>
+            </div>
+            <div class="mb-3">
+                <label for="input_email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="input_email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">회원가입</button>
+        </form>
+    </div>
+
+    <script>
+        const signup_form = $('#signup_form');
+        const input_id = $('#input_id');
+        const input_pw = $('#input_pw');
+        const input_name = $('#input_name');
+        const input_birth = $('#input_birth');
+        const input_phone = $('#input_phone');
+        const input_nickname = $('#input_nickname');
+        const input_email = $('#input_email');
+
+        signup_form.on('submit', async e =>
+        {
+            e.preventDefault();
+
+            const data = {
+                id: input_id.val(),
+                pw: input_pw.val(),
+                name: input_name.val(),
+                birth: input_birth.val(),
+                phone: input_phone.val(),
+                nickname: input_nickname.val(),
+                email: input_email.val(),
+            };
+            const response = await requestPostAPI('/signup', data);
+
+            if (response.data.result == true)
+            {
+                alert('회원가입 성공');
+                window.location.href = '/signin';
+            }
+            else
+            {
+                alert('회원가입 실패');
+            }
+        });
+    </script>
+</body>
+</html>

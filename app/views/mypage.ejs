@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('_component/head.ejs', {titleName: '마이 페이지'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('_component/goto_main.ejs')%>
+    <h1>마이 페이지</h1>
+    <h2>내 계정 정보</h2>
+    ID : <%= account_id %><br>
+    비밀번호
+    <input type="password" name="signin_pw" id="input_pw">
+    별명
+    <input type="text", name="nickname", id="input_nickname">
+    이메일
+    <input type="email", name="email", id="input_email">
+    <button id="btn_modify">정보수정</button>
+
+    <script>
+        const btn_modify = findId('btn_modify');
+        const input_pw = findId('input_pw');
+        const input_nickname = findId('input_nickname');
+        const input_email = findId('input_email');
+
+        btn_modify.addEventListener('click', function(){
+            const data = {
+                pw: input_pw.value,
+                nickname: input_nickname.value,
+                email: input_email.value,
+            };
+            requestPostAPI('/mypage', data);
+        });
+    </script>
+
+    <!--티켓 예약 정보-->
+    <h2>예약기록</h2>
+    <table>
+        <thead>
+            <th>티켓번호</th>
+            <th>날짜</th>
+            <th>시각</th>
+            <th>영화</th>
+            <th>가격</th>
+            <th>상태</th>
+        </thead>
+        <tbody id="ticket_purchase_history"></tbody>
+    </table>
+
+    <!--상품 구매 정보-->
+    <h2>상품구매기록</h2>
+    <table>
+        <thead>
+            <th>상점</th>
+            <th>상품</th>
+            <th>수량</th>
+            <th>주문상태</th>
+        </thead>
+        <tbody id="item_purchase_history"></tbody>
+    </table>
+
+
+    <!--포인트 사용, 적립 정보-->
+    <h2>포인트</h2>
+    <div id="cur_points"></div>
+    <table>
+        <thead>
+            <th>순차번호</th>
+            <th>적립/사용</th>
+            <th>변동값</th>
+            <th>내용</th>
+        </thead>
+        <tbody id="points_history"></tbody>
+    </table>
+
+    <script>
+        $(document).ready(() => {
+            fill_ticket_purchase_history();
+            fill_item_purchase_history();
+            fill_points_history();
+
+            // 티켓 구매 이력
+            async function fill_ticket_purchase_history()
+            {
+                const ticket_purchase_history = $('#ticket_purchase_history');
+                const data = {account_id: account_id}
+
+                const response_data = await requestPostAPI('/mypage/ticket', data)
+                const history_list = response_data.data.ticket_history_list;
+
+                // 티켓 예약 이력 데이터 화면에 입력
+                ticket_purchase_history.html('');
+                for (const history of history_list)
+                {
+                    ticket_purchase_history.append(
+                        `<tr id="${history.ticket_uid}">
+                            <td>${history.ticket_uid}</td>
+                            <td>${history.session_date}</td>
+                            <td>${history.session_datetime}</td>
+                            <td>${history.movie_name}</td>
+                            <td>${history.ticket_price}</td>
+                            <td>${history.reserve_status}</td>
+                        </tr>`
+                    );
+                }
+            }
+
+            // 상품 구매 이력
+            async function fill_item_purchase_history()
+            {
+                const item_purchase_history= $('#item_purchase_history');
+                const data = {account_id: account_id}
+
+                const response_data = await requestPostAPI('/mypage/item', data)
+                const history_list = response_data.data.basket_history_list;
+
+                // 티켓 예약 이력 데이터 화면에 입력
+                item_purchase_history.html('');
+                for (const history of history_list)
+                {
+                    item_purchase_history.append(
+                        `<tr id="${history.basket_uid}">
+                            <td>${history.store_name}</td>
+                            <td>${history.item_name}</td>
+                            <td>${history.order_quantity}</td>
+                            <td>${history.order_status}</td>
+                        </tr>`
+                    );
+                }
+            }
+
+            // 포인트 적립, 사용 이력
+            async function fill_points_history()
+            {
+                const points_history = $('#points_history');
+                const cur_points = $('#cur_points');
+                const data = {account_id: account_id}
+
+                const response_data = await requestPostAPI('/mypage/points', data)
+                const points_sum = response_data.data.points_sum;
+                const history_list = response_data.data.points_history_list;
+
+                cur_points.html("현재 포인트 : ")
+                cur_points.append(`${points_sum}`)
+
+                // 티켓 예약 이력 데이터 화면에 입력
+                points_history.html('');
+                for (const history of history_list)
+                {
+                    points_history.append(
+                        `<tr id="${history.points_history_sq}">
+                            <td>${history.points_history_sq}</td>
+                            <td>${history.reward_category}</td>
+                            <td>${history.change_value}</td>
+                            <td>${history.detail}</td>
+                        </tr>`
+                    );
+                }
+            }
+        })
+    </script>
+</body>
+</html>

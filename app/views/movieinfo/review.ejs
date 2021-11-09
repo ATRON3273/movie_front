@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../_component/head.ejs', {titleName: '메인'}) %>
+<body>
+    <!--메인 화면-->
+    <%- include('../_component/goto_main.ejs') %>
+    
+    <input type="text" name="keyword", id="keyword">
+    <button id="btn_search">검색</button>
+    
+    <%
+    const review = {
+            movie_code: "324",
+            movie_title: "분노의 질주",
+            review_sq: "2",
+            account_id: "hello",
+            review_title: "와",
+            comment: "넘넘 벅진감넘치는… 달리고 싶드아~~!!",
+            score: 8.0,
+        }
+    %>
+
+    <h1><%= review.movie_title %></h1>
+    <h2><%= review.review_title %></h2>
+    <p>글쓴이 : <%= review.account_id %></p>
+    <p>평점 : <%= review.score %></p>
+    <p><%= review.comment %></p>
+</body>
+</html>

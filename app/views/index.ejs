@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('_component/head.ejs', {titleName: '메인'})%>
+<body>
+<!--*****-->
+<h1>영화 예매 온라인 시스템</h1>
+    <div class="container m-auto">
+        <% if (account_id == null) { %>
+        <p>
+            <strong>안녕하세요!</strong>
+        </p>
+        <% } else { %>
+        <p>
+            <strong>환영합니다, <%= account_id %>님</strong>
+        </p>
+        <% } %>
+
+        <% if (account_id == null) { %>
+        <a href="/signin" class="btn btn-sm btn-primary">로그인</a>
+        <a href="/signup" class="btn btn-sm btn-secondary">회원가입</a>
+        <% } else { %>
+        <a href="/mypage" class="btn btn-sm btn-info">마이페이지</a>
+        <a href="/logout" class="btn btn-sm btn-danger">로그아웃</a>
+        <% } %>
+        <a href="/purchase/movie/select" class="btn btn-sm btn-light">영화예매</a>
+        <a href="/purchase/item/select" class="btn btn-sm btn-light">상품구매</a>
+
+        <form id="search_form" class="mb-3">
+            <div class="row g-3">
+                <div class="col">
+                    <input type="text" name="search" id="search" class="form-control" required>
+                </div>
+                <div class="col col-auto">
+                    <button type="submit" class="btn btn-primary">검색</button>
+                </div>
+            </div>
+        </form>
+        <ul id="movie_search">
+            <li>
+                
+            </li>
+        </ul>
+        <ul id="crew_search">
+            <li>
+
+            </li>
+        </ul>
+
+    </div>
+
+    <script>
+    $(document).ready(() => {
+        
+        
+        function search()
+        {
+            $("#search_form").on('submit', async e => {
+                e.preventDefault();
+                const data = {
+                    keyword: $("#search_form").val(),
+                };
+            });
+
+            const movie_search_response = await requestPostAPI('/movieinfo/movie/search', data);
+            const crew_search_response = await requestPostAPI('/movieinfo/crew/search', data);
+        
+            
+        }
+        // do something
+        console.log(results);
+
+    });
+    </script>
+</body>
+</html>

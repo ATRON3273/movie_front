@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../_component/head.ejs', {titleName: '상품 주문 확인'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('../../_component/goto_main.ejs')%>
+
+    <!--주문을 하고 order, payment 데이터가 생기는 걸로-->
+    <h1>상품 주문 확인</h1>
+    <%
+        const data = {
+            theater_name: "theater1",
+            store_name: "3관",
+            item_name: "혼영세트(팝콘+콜라L)",
+            item_price: 8000,
+            order_quantity: 3,
+            purchase_category: "item",
+        }
+        data.payment_price = data.item_price * data.order_quantity
+    %>
+    <p>영화관 이름 : <%= data.theater_name %></p>
+    <p>상점 이름 : <%= data.store_name %></p>
+    <p>상품 이름 : <%= data.item_name %></p>
+    <p>상품 가격 : <%= data.item_price %></p>
+    <p>주문 갯수 : <%= data.order_quantity %></p>
+    <p>결제 가격 : <%= data.payment_price %></p>
+
+    <!--결제 방법 선택-->
+    <%- include('../../_component/payment_method.ejs')%>
+</body>
+</html>

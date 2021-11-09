@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../_component/head.ejs', {titleName: '결제 완료'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('../../_component/goto_main.ejs')%>
+    <h1>결제 완료</h1>
+    <div id="payment_result">
+    <table>
+        <thead>
+            <tr>
+                <th>행</th>
+                <th>열</th>
+                <th>등급</th>
+            </tr>
+        </thead>
+        <tbody id="seat_table">
+        </tbody>
+    </table>
+    </div>
+
+    <script>
+    $(document).ready(() => {
+        // 이거 왠지 안 될 듯
+        const payment_uid = payment_uid;
+        // id값을 받아와 변수에 저장
+        const purchase_result = $("#purchase_result");
+        const seat_table = $("#seat_table")
+        render_payment_result();
+
+        // 결제 결과를 화면에 출력하는 함수
+        async function render_payment_result()
+        {
+            const payment_result = $("#payment_result");
+
+            // 이거 받아와지나??
+            const payment_uid = payment_uid;
+            const response_data = await requestPostAPI('/purchase/movie/complete/load_data');
+
+            const theater_name = response_data.data.theater_name;
+            const screen_name = response_data.data.screen_name;
+            const movie_title = response_data.data.movie_title;
+            const seat_list = response_data.data.seat_list;
+            const payment_price = response_data.data.payment_price;
+            const payment_method = response_data.data.payment_method;
+
+            // 리스트 값을 받아서 option 내용을 바꿈
+            payment_result.html('');
+
+                    
+
+            payment_result.append($(`<p>영화관 : ${theater_name}</p>`));
+            payment_result.append($(`<p>상영관 : ${screen_name}</p>`));
+            payment_result.append($(`<p>영화 : ${movie_title}</p>`));
+            
+            payment_result.append($(`<p>좌석${seat_row}${seat_col}</p>`));
+
+            for (const seat of seat_list)
+            {
+                seat_table.append
+                seat_table.append($(`
+                    <tr>
+                        <td>${seat.seat_row}</td>
+                        <td>${seat.seat_col}</td>
+                        <td>${seat.seat_category}</td>
+                    </tr>`));
+            }
+            payment_result.append($(`<p>가격 : ${payment_price}</p>`));
+            payment_result.append($(`<p>결제방법 : ${payment_method}</p>`));
+        }
+    });
+    </script>
+</body>
+</html>

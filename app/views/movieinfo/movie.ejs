@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../_component/head.ejs', {titleName: '메인'}) %>
+<body>
+    <!--메인 화면-->
+    <%- include('../_component/goto_main.ejs') %>
+    
+    <input type="text" name="keyword", id="keyword">
+    <button id="btn_search">검색</button>
+
+    <%
+    // SELECT * FROM movie WHERE movie_code="search_movie_code";
+    // SELECT poster_image FROM poster WHERE movie_code="search_movie_code" AND poster_sq=1;
+    // SELECT genre_name FROM genre WHERE movie_code="search_movie_code";
+    const movie = {
+        movie_code: "1234",
+        movie_title: "분노의 질주",
+        movie_title_eng: "Fast & Furious 9 THE FAST SAGA",
+        production_country: "미국",
+        running_time: 143,
+        synopsis: `기다림은 끝났다!
+전 세계가 기다려온 단 하나의 액션블록버스터!
+ 
+도미닉(빈 디젤)은 자신과 가장 가까웠던 형제 제이콥(존 시나)이 사이퍼(샤를리즈 테론)와 연합해
+전 세계를 위기로 빠트릴 위험천만한 계획을 세운다는 사실을 알게 되고,
+이를 막기 위해 다시 한 번 패밀리들을 소환한다.
+
+가장 가까운 자가 한순간, 가장 위험한 적이 된 상황
+도미닉과 패밀리들은 이에 반격할 놀라운 컴백과 작전을 세우고
+지상도, 상공도, 국경도 경계가 없는 불가능한 대결이 시작되는데…,`,
+        release_date: "2021.05.19",
+        media_rating: "12세 이상",
+        productor: "유니버설 스튜디오",
+        distributor: "유니버설 스튜디오",
+        production_status: "개봉",
+        avg_score: "8.8",
+        poster: "path",
+        genre: ["액션", "범죄"],
+    }
+
+    // SELECT crew_code, main_role, sub_role FROM contributor WHERE movie_code="search_movie_code";
+    const contributor = [
+        {
+            crew_code: "저스틴 린",
+            main_role: "감독",
+            sub_role: "총감독",
+        },
+        {
+            crew_code: "빈 디젤",
+            main_role: "배우",
+            sub_role: "주연",
+        },
+        {
+            crew_code: "존 시나",
+            main_role: "배우",
+            sub_role: "주연",
+        },
+        {
+            crew_code: "성 강",
+            main_role: "배우",
+            sub_role: "조연",
+        },
+    ]
+
+    const review = [
+        {
+            account_id: "hihi",
+            review_title: "재밌다",
+            score: 9.0,
+        },
+        {
+            account_id: "hello",
+            review_title: "넘넘 벅진감넘치는… 달리고 싶드아~~!!",
+            score: 8.0,
+        },
+        {
+            account_id: "hihi",
+            review_title: "역시 굿!!! 말이 필요없다 ",
+            score: 8.8,
+        },
+        {
+            account_id: "죠르디",
+            review_title: "역시 분노의질주 진짜 스케일 끝장난다 분노의질주 보니까 도쿄가고싶다",
+            score: 9.0,
+        },
+    ]
+    %>
+
+    <h1><%= movie.movie_title %></h1>
+    <p><%= movie.movie_title_eng %></p>
+    <p>평점 : <%= movie.avg_score %></p>
+    <img src="<%= movie.poster %>" alt="poster">
+
+    <h2>상세 내용</h2>
+    <p>
+        장르 : 
+        <% for (const element of movie.genre) { %>
+        <%= element %> | 
+        <% } %>
+    </p>
+    <p>영상물 등급 : <%= movie.media_rating %></p>
+    <p>상영시간 : <%= movie.running_time %></p>
+    <p>개봉일자 : <%= movie.release_date %></p>
+    <p>제작국가 : <%= movie.production_country %></p>
+    <p>제작사 : <%= movie.productor %></p>
+    <p>배급사 : <%= movie.distributor %></p>
+    <p>제작상태 : <%= movie.production_status %></p>
+
+    <h2>시놉시스</h2>
+    <pre><%= movie.synopsis %></pre>
+
+    <h2>참여자</h2>
+    <table>
+        <thead>
+            <th>이름</th>
+            <th>주역할</th>
+            <th>부역할</th>
+        </thead>
+        <tbody>
+            <% for (const crew of contributor) { %>
+            <tr>
+                <td><%= crew.crew_code %></td>
+                <td><%= crew.main_role %></td>
+                <td><%= crew.sub_role %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <h2>후기</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td>제목</td>
+                <td><input type="text" name="new_review_title" id="new_review_title"></td>
+            </tr>
+            <tr>
+                <td>점수</td>
+                <td><input type="range" value="0" min="0" max="10" step="0.5" name="review_score" id="review_score"onchange='range_change(this)'></td>
+                <td><span id='review_score_show'></span></td>
+            </tr>
+            <script>
+                function range_change(obj) {
+                  document.getElementById('review_score_show').innerHTML=obj.value;
+                }
+            </script>
+            <tr>
+                <td>리뷰</td>
+                <td><input type="text" name="new_review_text", id="new_review_text"></td>
+                <td><button id="btn_add_review">등록</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const btn_add_review = findId('btn_add_review');
+        const movie_code = <%= movie.movie_code %>;
+        const account_id = "account_id"
+        const new_review_title = findId('new_review_title');
+        const new_comment = findId('new_review_text');
+        const score = findId('review_score_show');
+
+        btn_add_review.addEventListener('click', function()
+        {
+            const data = {
+                movie_code: movie_code.value,
+                account_id: account_id.value,
+                new_review_title: new_review_title.value
+                new_comment: new_comment.value,
+                score: score.value,
+            };
+            requestPostAPI('/movieinfo/movie', data)
+            .then(function (response)
+            {
+                if (response.data.result == true)
+                {
+                    alert('리뷰 등록 성공');
+                    window.location.href = '/movieinfo/movie';
+                }
+                else
+                {
+                    alert('리뷰 등록 실패');
+                }
+            });
+        });
+    </script>
+
+
+    <table>
+        <thead>
+            <th>아이디</th>
+            <th>후기제목</th>
+            <th>평점</th>
+        </thead>
+        <tbody>
+            <% for (const review_element of review) { %>
+            <tr id="<%= review_element.review_title %>">
+                <td><%= review_element.account_id %></td>
+                <td><%= review_element.review_title %></td>
+                <td><%= review_element.score %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

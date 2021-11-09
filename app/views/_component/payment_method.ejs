@@ -1,0 +1,34 @@
+결제방법 선택 : 
+<% const method = ["신용카드", "무통장입금", "카카오페이", "포인트"] %>
+<select name="payment_method" id="payment_method">
+    <% for (const element of method) { %>
+    <option value="<%= element %>"><%= element %></option>
+    <% } %>
+</select>
+<button id="btn_pay">결제</button><br>
+    <script>
+        const payment_method = findId('payment_method')
+        
+        function paycheck()
+        {
+            const data = {
+                
+                payment_price: payment_price,
+                payment_method: payment_method.value,
+            };
+            requestPostAPI('/purchase/check', data)
+            .then(function (response) {
+                if (response.data.result)
+                {
+                    alert('결제 완료');
+                    window.location.href = '/purchase/complete';
+                }
+                else
+                {
+                    alert('결제 실패');
+                }
+            });
+        }
+
+        btn_pay.addEventListener('click', paycheck());
+    </script>

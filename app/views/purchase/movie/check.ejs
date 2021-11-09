@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../_component/head.ejs', {titleName: '구매 확인'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('../../_component/goto_main.ejs')%>
+    <h1>영화 예약 확인</h1>
+
+    <p>영화관 : <%= theater_name %></p>
+    <p>상영관 : <%= screen_name %></p>
+    <p>영화 : <%= movie_title %></p>
+    <p>좌석</p>
+    <table>
+        <thead>
+            <tr>
+                <th>좌석행</th>
+                <th>좌석열</th>
+                <th>좌석유형</th>
+            </tr>
+
+        </thead>
+            <!--??? 좌석 정보 안 읽어와짐-->
+            <% for (const seat of reserved_seat_list) { %>
+            <tr id="<%= seat.seat_uid %>">
+                <td><%= seat.seat_row %></td>
+                <td><%= seat.seat_col %></td>
+                <td><%= seat.seat_category %></td>
+            </tr>
+            <% } %>
+    </table>
+
+    <h2>결제</h2>
+    <p>성인 수: <%= adult_no %></p>
+    <p>청소년 수 : <%= child_no %></p>
+    <p>가격 : <%= payment_price %></p>
+
+    <!--결제 방법 선택-->
+    <div>
+        <select id="payment_method"></select>
+        <button id="btn_pay">결제</button>
+    </div>
+
+    <script>
+    const payment_method_category = ["신용카드", "무통장입금", "카카오페이", "포인트"];
+    const payment_method = $("#payment_method");
+    const btn_pay = $("#btn_pay");
+
+    for (const element of payment_method_category)
+    {
+        payment_method.append(`<option value=${element}>${element}</option>`);
+    }
+
+    btn_pay.on('click', paycheck);
+
+    async function paycheck()
+    {
+        // 세션 로그인 정보로부터 customer_code를 읽음
+        const customer_response_data = await requestPostAPI('/purchase/movie/check/customer_code');
+        const customer_code = customer_response_data.data.customer_code;
+        // 세션 만료인 상태라면 로그인 창으로 redirect
+        if (customer_code == null)
+        {
+            alert("결제하려면 로그인을 해야 합니다.");
+            window.location.href = '/signin';
+            return false;
+        }
+
+        // 결제방법 정보 읽음
+        const payment_method_data = {
+            payment_method: payment_method.val()
+        };
+        const check_response_data = await requestPostAPI('/purchase/movie/check/check_payment', payment_method_data);
+        const is_payment_availabie = check_response_data.data.result;
+        // 결제가 불가능하다면 false 반환
+        if (is_payment_availabie == false)
+        {
+            alert('결제 실패, 다른 옵션을 선택하세요.');
+            return false;
+        }
+
+        // ???? 여기가 안 됨
+        const adult_no = adult_no;
+        const child_no = child_no;
+        const payment_price = payment_price;
+        const payment_process_data = {
+            customer_code,
+            payment_method: payment_method,
+            reserve_status: "예약"
+        };
+
+        const payment_process_response_data = await requestPostAPI('/purchase/movie/check/process_payment', payment_process_data);
+        const is_payment_success = payment_process_response_data.data.result;
+
+        // 결제 성공 시 결제 완료 페이지로 이동
+        if (is_payment_success)
+        {
+            alert('결제 완료');
+            const payment_uid = payment_process_response_data.data.payment_uid;
+            const ticket_uid = payment_process_response_data.data.ticket_uid;
+            const session_uid = payment_process_response_data.data.session_uid;
+
+            // 필요한 정보를 string으로 변환 후 다음 페이지 요청
+            const href = '/purchase/movie/complete';
+            const queryParams = {
+                    payment_uid,
+                    ticket_uid,
+                    session_uid,
+                };
+            const queryString = Object.entries(queryParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+            
+            // 결제 완료 페이지로 payment_uid, ticket_uid, session_uid 전달
+            window.location.href = `${href}?${queryString}`;
+        }
+        // 결제 실패 시 false 반환
+        else
+        {
+            alert('결제 실패, 다시 시도하세요');
+            return false;
+        }
+    }
+    </script>
+</body>
+</html>

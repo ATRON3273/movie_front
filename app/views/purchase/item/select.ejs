@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../_component/head.ejs', {titleName: '상품 주문'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('../../_component/goto_main.ejs')%>
+    <h1>상품 주문 페이지</h1>
+    <h2>상품 주문</h2>
+
+    <h3>영화관목록</h3>
+    <select name="theater_select" id="theater_select"></select>
+    <br>
+
+    <h3>상점목록</h3>
+    <select name="store_select" id="store_select"></select>
+    <br>
+
+    <h3>상품목록</h3>
+    <table>
+        <thead>
+            <th>상품 이름</th>
+            <th>상품 유형</th>
+            <th>상품 가격</th>
+            <th>
+        </thead>
+        <tbody id="item_table"></tbody>
+    </table>
+        
+    <a href="/purchase/item/check">주문 확인</a>
+
+
+    <script>
+    // 페이지가 모두 로드된 후 실행하는 부분
+    $(document).ready(() => {
+        // 각 id값을 받아와 변수에 저장
+        const theater_select = $('#theater_select');
+        const store_select = $('#store_select');
+
+        init_theater_list();
+
+        // 각 변수에 변화가 일어나는지 감지 (change 이벤트 감지 == addEventListener)
+        // 변화가 일어나면 함수를 호출
+        theater_select.on('change', change_store_list);
+        store_select.on('change', change_item_table);
+
+        function clear_item_table()
+        {
+            const item_table = $("#item_table");
+            item_table.html('');
+        }
+
+        // 페이지 초반 로드 시 영화관 선택 목록을 만들기 위한 함수
+        async function init_theater_list()
+        {
+            const response_data = await requestPostAPI('/purchase/item/select/init_theater')
+            const theater_list = response_data.data.theater_list;
+
+            // 리스트 값을 받아서 option 내용을 바꿈
+            theater_select.html('');
+            theater_select.append($(`<option disabled selected value="">===</option>`));
+            for (const theater of theater_list)
+            {
+                theater_select.append($(`<option id=${theater.theater_code}>${theater.theater_name}</option>`));
+            }
+        }
+
+        // 영화관을 기준으로 필터링해 상점 목록을 유동적으로 변화시키는 함수
+        async function change_store_list()
+        {
+            // 영화관 데이터를 읽음
+            const val_theater = $(theater_select).val();
+            const data = {theater_code: val_theater};
+
+            // do request
+            const response_data = await requestPostAPI('/purchase/item/select/filter_store', data)
+            const store_list = response_data.data.store_list;
+
+            // 리스트 값을 받아서 option 내용을 바꿈
+            store_select.html('');
+            store_select.append($(`<option disabled selected value="">===</option>`));
+            for (const store of store_list)
+            {
+                store_select.append($(`<option id=${store.store_code}>${store.store_name}</option>`));
+            }
+
+            clear_item_table();
+        }
+
+        // 영화관, 상점 선택 후 상품 목록을 보여주는 함수
+        async function change_item_table()
+        {
+            // 상품 테이블의 id값을 받아옴
+            const item_table = $("#item_table");
+            // 상점 코드를 읽음
+            const val_store = $(store_select).val();
+
+            const data = {store_code: val_store};
+
+            // do request
+            const response_data = await requestPostAPI('/purchase/item/select/filter_item', data)
+            const item_list = response_data.data.item_list;
+
+            // 리스트 값을 받아서 테이블 내용을 바꿈
+            clear_item_table();
+
+            for (const item of item_list)
+            {
+                item_table.append(
+                    `<tr id="${item.item_code}">
+                        <td>${item.item_name}</td>
+                        <td>${item.item_category}</td>
+                        <td>${item.item_price}</td>
+                    </tr>`
+                );
+            }
+        }
+    })
+    </script>
+</body>
+</html>

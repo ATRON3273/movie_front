@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../_component/head.ejs', {titleName: '좌석예약'})%>
+<body>
+    <!--메인 화면-->
+    <%- include('../../_component/goto_main.ejs')%>
+    <h1>좌석 선택창</h1>
+
+    <%
+    // 여러 개 체크할 수 있도록 고치기
+    // 성인, 청소년 숫자 입력 화면 추가
+    // 각 좌석마다 예약 가능/불가능 여부 보여주기
+    
+    // 스크린 방향이 어디인지 표시
+    // 좌석 클래스 구분해서 보여주기
+
+    const screen_seat = [];
+
+    for (let row = 0; row < max_row_num; row++) {
+        screen_seat.push([]);
+        for (let col = 0; col < max_col_num; col++) {
+            screen_seat[row].push(null);
+        }
+    }
+
+    seat_list.forEach(seat => {
+        const { seat_row, seat_col } = seat;
+        screen_seat[seat_row][seat_col] = seat;
+    });
+
+    %>
+
+    <table>
+        <thead id="screen_col_index">
+            <!-- 좌석의 열 인덱스 표시 -->
+            <tr></tr>
+                <th></th>
+                <% for (let col = 0; col < max_col_num; col++) { %>
+                    <th><%= col %></th>;
+                <% } %>
+            </tr>
+        </thead>
+        <tbody id="screen_seat_struct">
+            <!-- 좌석 행 인덱스와 좌석 표시 -->
+            <% for (let row = 0; row < max_row_num; row++) { %>
+                <tr>
+                <% const alphabet = String.fromCharCode(65 + row); %>
+                    <th><%= alphabet %></th>
+                    <% for (let col = 0; col < max_col_num; col++) { %>
+                        <td>
+                            <% if (screen_seat[row][col]) { %>
+                                <% const is_reserved = !screen_seat[row][col].reserve_status; %>
+                                <% const is_disable = !screen_seat[row][col].seat_status || is_reserved; %>
+                                <% const disabled_prop = is_disable ? 'disabled' : ''; %>
+                                <% const checked_prop = is_reserved ? 'checked' : ''; %>
+                                <!-- 좌석이 사용 불가능하면 태그 내 disabled 속성 추가 -->
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    name="<%= `seat-${row}-${col}` %>"
+                                    data-row="<%= row %>"
+                                    data-col="<%= col %>"
+                                    id="<%= screen_seat[row][col].seat_uid %>"
+                                    <%= disabled_prop %>
+                                    <%= checked_prop %>
+                                >
+                            <% } %>
+                        </td>
+                    <% } %>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <button id="sub_adult">-</button>
+    성인 : <span id="adult_no"></span>
+    <button id="add_adult">+</button>
+
+    <button id="sub_child">-</button>
+    청소년 : <span id="child_no"></span>
+    <button id="add_child">+</button>
+
+    <button id="btn_goto_check">예약 확인</button>
+
+    <script>
+    const screen_seat = <%- JSON.stringify(screen_seat) %>;
+
+    let
+        adult_no = 0,
+        child_no = 0,
+        selected_seat = [];
+
+    const screen_code = "<%= screen_code %>";
+    const session_uid = "<%= session_uid %>";
+
+    const screen_seat_struct = $("#screen_seat_struct");
+    const btn_goto_check = $("#btn_goto_check");
+
+    // 페이지가 모두 로드된 후 실행하는 부분
+    $(document).ready(() => {
+
+        clear_checkbox();
+        show_num();
+
+        // TODO: edit
+        async function get_screen_shape()
+        {
+            const screen_col_index = $("#screen_col_index");
+
+            // 좌석 구조, 좌석 예약 정보 데이터 받기
+            const seat_data = {
+                screen_code
+            };
+            const seat_response_data = await requestPostAPI('/purchase/item/select/get_seat', seat_data);
+            const seat_list = response_data.data.seat_list;
+        }
+
+        // 페이지 새로고침 후 모든 checkbox에 checked를 없애는 함수
+        function clear_checkbox() {
+            // disabled 속성이 없는 checkbox 중 checked 속성을 모두 false로 변환
+            $("#screen_seat_struct input:checkbox:not(:disabled)").prop("checked", false);
+        }
+
+        // adult_no의 숫자를 페이지에 보여주는 함수
+        function show_num() {
+            $("#adult_no").html(adult_no);
+            $("#child_no").html(child_no);
+        }
+
+        $("#sub_adult").on('click', () => changePersons(-1, 1));
+        $("#sub_child").on('click', () => changePersons(1, -1));
+        $("#add_adult").on('click', () => changePersons(1, -1));
+        $("#add_child").on('click', () => changePersons(-1, 1));
+
+        // 
+        function changePersons(d_adult, d_child)
+        {
+            const next_adult_no = adult_no + d_adult;
+            const next_child_no = child_no + d_child;
+            if (next_adult_no < 0 || next_child_no < 0) return;
+
+            // show updated values
+            adult_no = next_adult_no;
+            child_no = next_child_no;
+            show_num();
+        }
+
+        screen_seat_struct.on('change', 'input:checkbox', e => {
+            // 체크를 했을 때 숫자 증가
+            if (e.target.checked)
+            {
+                adult_no++;
+                selected_seat.push(screen_seat[e.target.dataset.row][e.target.dataset.col]);
+            }
+            // 체크를 해제했을 때 숫자 증가
+            else
+            {
+                // checked 해제한 좌석의 uid를 통해 배열에 해당 uid값의 seat 값을 제거
+                selected_seat = selected_seat.filter(seat => seat.id !== e.target.id);
+
+                if (adult_no > 0)
+                {
+                    adult_no--;
+                }
+                else
+                {
+                    child_no--;
+                }
+            }
+            show_num();
+        });
+
+        // 좌석 선택 후 예약 확인 페이지로 넘어가는 버튼
+        btn_goto_check.on('click', select_seat);
+        
+        function select_seat(event)
+        {
+            // 선택한 좌석이 없으면 버튼 작동 비활성화
+            if (selected_seat.length == 0) return;
+            
+            // selected_seat의 필요없는 속성을 제거
+            const filtered_seat_list = selected_seat.map(seat => {
+                return {
+                    seat_uid: seat.seat_uid,
+                    seat_row: seat.seat_row,
+                    seat_col: seat.seat_col,
+                    seat_category: seat.seat_category,
+                };
+            });
+            
+            // 필요한 정보를 string으로 변환 후 다음 페이지 요청
+            const href = '/purchase/movie/check';
+
+            const queryParams = {
+                session_uid,
+                adult_no,
+                child_no,
+                reserved_seat_list: JSON.stringify(filtered_seat_list),
+            };
+            const queryString = Object.entries(queryParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+
+            window.location.href = `${href}?${queryString}`;
+        }
+    });
+    </script>
+</body>
+</html>
